@@ -23,9 +23,12 @@ module.exports = {
            var target = undefined;
 
            for (let percentage = 0.0001; percentage <= 1; percentage += 0.0001 ) {
-               target = creep.pos.findClosestByPath(walls, {
-                  filter: (w) => w.hits / w.hitsMax < percentage
-               });
+               for ( let wall of walls ) {
+                   if ( wall.hits / wall.hitsMax < percentage ) {
+                      target = wall;
+                      break;
+                   }
+               }
 
                if ( target != undefined ) {
                  break;
