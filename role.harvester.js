@@ -1,4 +1,15 @@
+var roleRepairer = require('role.repairer');
+
 module.exports = {
+    name: 'harvester',
+    miningConfigs: [
+        [WORK, WORK, MOVE, WORK, WORK, MOVE, WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, CARRY, MOVE],
+        [WORK, WORK, MOVE, WORK, WORK, MOVE, CARRY, CARRY, MOVE, CARRY, CARRY, MOVE],
+        [WORK, WORK, MOVE, CARRY, CARRY, MOVE, CARRY, CARRY, MOVE],
+        [WORK, WORK, MOVE, CARRY, CARRY, MOVE],
+        [WORK, WORK, CARRY, MOVE],
+        [WORK, CARRY, MOVE]
+    ],
     // a function to run the logic for this role
     run: function(creep) {
         // if creep is bringing energy to the spawn but has no energy left
@@ -11,15 +22,12 @@ module.exports = {
             // switch state
             creep.memory.working = true;
         }
-        else if (creep.memory.working == undefined) {
-            creep.memory.working = false;
-        }
 
         // if creep is supposed to transfer energy to the spawn
         if (creep.memory.working == true) {
             // transfer in order
-            for (let structureType of [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_STORAGE]) {
-                let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+            for (let structureType of [STRUCTURE_EXTENSION, STRUCTURE_TOWER, STRUCTURE_SPAWN, STRUCTURE_STORAGE]) {
+                let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: (s) => s.structureType == structureType && s.energy < s.energyCapacity
                 });
 
@@ -29,6 +37,11 @@ module.exports = {
                    }
 
                    break;
+                }
+                // if nowhere to transfer, do repairing work
+                else
+                {
+                    roleRepairer.run(creep);
                 }
             }
         }

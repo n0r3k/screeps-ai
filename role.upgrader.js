@@ -23,7 +23,7 @@ module.exports = {
             // try to upgrade the controller
             if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 // if not in range, move towards the controller
-                creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffaa00'}});
+                creep.moveTo(creep.room.controller);
             }
         }
         // if creep is supposed to harvest energy from source
@@ -33,7 +33,7 @@ module.exports = {
             // try to harvest energy, if the source is not in range
             if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 // move towards the source
-                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
+                creep.moveTo(source);
             }
         }
     }

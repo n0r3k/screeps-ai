@@ -14,25 +14,44 @@ module.exports = {
             creep.memory.working = true;
         }
 
-        // if creep is supposed to complete a constructionSite
+        // if creep is supposed to repair a structure
         if (creep.memory.working == true) {
-            // find closest constructionSite
-            var structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (s) => s.hits < s.hitsMax && ((s.structureType == STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART) && s.hits < 150000)
-            });
+            // find closest constructionSite by priority
+            var structureTypes = [STRUCTURE_TOWER, STRUCTURE_RAMPART, STRUCTURE_EXTENSION, STRUCTURE_ROAD];
+            for (let structureType of structureTypes) {
+                let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: (s) => s.structureType == structureType && s.hits < (s.structureType == STRUCTURE_RAMPART ? 100000 : s.hitsMax)
+                });
 
-            // if one is found
-            if (structure != undefined) {
-                // try to build, if the structures is not in range
-                if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
-                    // move towards the structures
-                    creep.moveTo(structure);
+                if ( structure != undefined ) {
+                   //console.log(structure);
+                   if ( creep.repair(structure) == ERR_NOT_IN_RANGE) {
+                      creep.moveTo(structure);
+                   }
+
+                   break;
                 }
-            }
-            // if no constructionSite is found
-            else {
-                // go upgrading the controller
-                roleBuilder.run(creep);
+                else
+                {
+                    // if no structure find, find any other structure
+                    structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                        filter: (s) => s.hits < (s.structureType == STRUCTURE_WALL ? 40000 : s.hitsMax) && s.structureType != STRUCTURE_RAMPART
+                    });
+
+                    // if one is found
+                    if (structure != undefined) {
+                        // try to build, if the structures is not in range
+                        if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
+                            // move towards the structures
+                            creep.moveTo(structure);
+                        }
+                    }
+                    // if no constructionSite is found
+                    else {
+                        // go upgrading the controller
+                        roleBuilder.run(creep);
+                    }
+                }
             }
         }
         // if creep is supposed to harvest energy from source

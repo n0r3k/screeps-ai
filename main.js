@@ -1,3 +1,4 @@
+require('prototype.spawn')();
 // import modules
 var commonFunctions = require('common.functions');
 var roleHarvester = require('role.harvester');
@@ -6,6 +7,9 @@ var roleBuilder = require('role.builder');
 var roleRepairer = require('role.repairer');
 var roleAttacker = require('role.attacker');
 var roleHealer = require('role.healer');
+var roleRanger = require('role.ranger');
+
+var structureTower = require('structure.tower');
 
 module.exports.loop = function () {
     // check for memory entries of died creeps by iterating over Memory.creeps
@@ -15,6 +19,14 @@ module.exports.loop = function () {
             // if not, delete the memory entry
             delete Memory.creeps[name];
         }
+    }
+
+    var towers = Game.rooms.E22S15.find(FIND_STRUCTURES, {
+        filter : (s) => s.structureType == STRUCTURE_TOWER
+    });
+
+    for ( let tower in towers ) {
+        structureTower.run(tower);
     }
 
     // for every creep name in Game.creeps
@@ -43,14 +55,18 @@ module.exports.loop = function () {
         else if (creep.memory.role == 'healer') {
             roleHealer.run(creep);
         }
+        else if (creep.memory.role == 'ranger') {
+            roleRanger.run(creep);
+        }
     }
 
     // setup some minimum numbers for different roles
     var minimumNumberOfHarvesters = 5;
     var minimumNumberOfUpgraders = 5;
-    var minimumNumberOfBuilders = 8;
+    var minimumNumberOfBuilders = 5;
     var minimumNumberOfRepairers = 5;
     var minimumNumberOfAttackers = 2;
+    var minimumNumberOfRangers = 2;
     var minimumNumberOfHealers = 1;
 
     // count the number of creeps alive for each role
@@ -62,48 +78,53 @@ module.exports.loop = function () {
     var numberOfRepairers = _.sum(Game.creeps, (c) => c.memory.role == 'repairer');
     var numberOfAttackers = _.sum(Game.creeps, (c) => c.memory.role == 'attacker');
     var numberOfHealers = _.sum(Game.creeps, (c) => c.memory.role == 'healer');
+    var numberOfRangers = _.sum(Game.creeps, (c) => c.memory.role == 'ranger');
 
+    var energy = Game.spawns.Spawn1.room.energyCapacityAvailable;
     var name = undefined;
 
     // if not enough harvesters
     if (numberOfHarvesters < minimumNumberOfHarvesters) {
         // try to spawn one
-        name = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], Creep.getRandomName('[Harvester]'),
-            { role: 'harvester', working: false});
+        name = Game.spawns.Spawn1.createCustomCreep( energy, 'harvester' );
+
+        if ( name == ERR_NOT_ENOUGH_ENERGY && numberOfHarvesters == 0 ) {
+           Game.spawns.Spawn1.createCustomCreep( Game.spawns.Spawn1.room.energyAvailable, 'harvester' );
+        }
     }
-    else if (numberOfAttackers < minimumNumberOfAttackers) {
-        // try to spawn one
-        name = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,ATTACK,ATTACK,MOVE,MOVE,ATTACK,MOVE], Creep.getRandomName('[Attacker]'),
-            { role: 'attacker' });
-    }
-    else if (numberOfHealers < minimumNumberOfHealers) {
-        // try to spawn one
-        name = Game.spawns.Spawn1.createCreep([HEAL,HEAL,MOVE], Creep.getRandomName('[Healer]'),
-            { role: 'healer' });
-    }
+    // else if (numberOfAttackers < minimumNumberOfAttackers) {
+    //     // try to spawn one
+    //     name = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,ATTACK,MOVE,MOVE,ATTACK], Creep.getRandomName('[Attacker]'),
+    //         { role: 'attacker' });
+    // }
+    // else if (numberOfHealers < minimumNumberOfHealers) {
+    //     // try to spawn one
+    //     name = Game.spawns.Spawn1.createCreep([HEAL,MOVE], Creep.getRandomName('[Healer]'),
+    //         { role: 'healer' });
+    // }
     // if not enough upgraders
     else if (numberOfUpgraders < minimumNumberOfUpgraders) {
         // try to spawn one
-        name = Game.spawns.Spawn1.createCreep([WORK,WORK,WORK,CARRY,CARRY,MOVE,MOVE], Creep.getRandomName('[Upgrader]'),
-            { role: 'upgrader', working: false});
+        name = Game.spawns.Spawn1.createCustomCreep( energy, 'upgrader' );
+    }
+    else if (numberOfRangers < minimumNumberOfRangers) {
+        // try to spawn one
+        name = Game.spawns.Spawn1.createCreep([RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE], Creep.getRandomName('[Ranger]'),
+            { role: 'ranger', working: false});
     }
     else if (numberOfRepairers < minimumNumberOfRepairers) {
         // try to spawn one
-        name = Game.spawns.Spawn1.createCreep([WORK,WORK,WORK,CARRY,CARRY,MOVE,MOVE], Creep.getRandomName('[Repairer]'),
-            { role: 'repairer', working: false});
+        name = Game.spawns.Spawn1.createCustomCreep( energy, 'repairer' );
     }
     // if not enough builders
-    else if (numberOfBuilders < minimumNumberOfBuilders) {
-        // try to spawn one
-        name = Game.spawns.Spawn1.createCreep([WORK,WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE], Creep.getRandomName('[Builder]'),
-            { role: 'builder', working: false});
-    }
+    // else if (numberOfBuilders < minimumNumberOfBuilders) {
+    //     // try to spawn one
+    //     name = Game.spawns.Spawn1.createCustomCreep( energy, 'builder' );
+    // }
     else {
         // else try to spawn a builder
-        name = Game.spawns.Spawn1.createCreep([WORK,WORK,WORK,CARRY,CARRY,CARRY,MOVE,MOVE], Creep.getRandomName('[Builder]'),
-            { role: 'builder', working: false});
+        name = Game.spawns.Spawn1.createCustomCreep( energy, 'builder' );
     }
-
     // print name to console if spawning was a success
     // name > 0 would not work since string > 0 returns false
     if (!(name < 0)) {
