@@ -8,6 +8,7 @@ var roleRepairer = require('role.repairer');
 var roleAttacker = require('role.attacker');
 var roleHealer = require('role.healer');
 var roleRanger = require('role.ranger');
+var roleMason = require('role.mason');
 
 var structureTower = require('structure.tower');
 
@@ -21,12 +22,14 @@ module.exports.loop = function () {
         }
     }
 
-    var towers = Game.rooms.E22S15.find(FIND_STRUCTURES, {
+    var towers = Game.rooms.W5N8.find(FIND_STRUCTURES, {
         filter : (s) => s.structureType == STRUCTURE_TOWER
     });
 
-    for ( let tower in towers ) {
-        structureTower.run(tower);
+    if ( towers != undefined ) {
+      for ( let tower of towers ) {
+          structureTower.run(tower);
+      }
     }
 
     // for every creep name in Game.creeps
@@ -58,16 +61,20 @@ module.exports.loop = function () {
         else if (creep.memory.role == 'ranger') {
             roleRanger.run(creep);
         }
+        else if (creep.memory.role == 'mason') {
+            roleMason.run(creep);
+        }
     }
 
     // setup some minimum numbers for different roles
-    var minimumNumberOfHarvesters = 5;
-    var minimumNumberOfUpgraders = 5;
-    var minimumNumberOfBuilders = 5;
-    var minimumNumberOfRepairers = 5;
+    var minimumNumberOfHarvesters = 3;
+    var minimumNumberOfUpgraders = 3;
+    var minimumNumberOfBuilders = 3;
+    var minimumNumberOfRepairers = 3;
     var minimumNumberOfAttackers = 2;
     var minimumNumberOfRangers = 2;
     var minimumNumberOfHealers = 1;
+    var minimumNumberOfMasons = 2;
 
     // count the number of creeps alive for each role
     // _.sum will count the number of properties in Game.creeps filtered by the
@@ -79,6 +86,7 @@ module.exports.loop = function () {
     var numberOfAttackers = _.sum(Game.creeps, (c) => c.memory.role == 'attacker');
     var numberOfHealers = _.sum(Game.creeps, (c) => c.memory.role == 'healer');
     var numberOfRangers = _.sum(Game.creeps, (c) => c.memory.role == 'ranger');
+    var numberOfMasons = _.sum(Game.creeps, (c) => c.memory.role == 'mason');
 
     var energy = Game.spawns.Spawn1.room.energyCapacityAvailable;
     var name = undefined;
@@ -92,16 +100,16 @@ module.exports.loop = function () {
            Game.spawns.Spawn1.createCustomCreep( Game.spawns.Spawn1.room.energyAvailable, 'harvester' );
         }
     }
-    // else if (numberOfAttackers < minimumNumberOfAttackers) {
-    //     // try to spawn one
-    //     name = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,ATTACK,MOVE,MOVE,ATTACK], Creep.getRandomName('[Attacker]'),
-    //         { role: 'attacker' });
-    // }
-    // else if (numberOfHealers < minimumNumberOfHealers) {
-    //     // try to spawn one
-    //     name = Game.spawns.Spawn1.createCreep([HEAL,MOVE], Creep.getRandomName('[Healer]'),
-    //         { role: 'healer' });
-    // }
+    else if (numberOfAttackers < minimumNumberOfAttackers) {
+        // try to spawn one
+        name = Game.spawns.Spawn1.createCreep([TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,ATTACK,MOVE,MOVE,ATTACK], Creep.getRandomName('[Attacker]'),
+            { role: 'attacker' });
+    }
+    else if (numberOfHealers < minimumNumberOfHealers) {
+        // try to spawn one
+        name = Game.spawns.Spawn1.createCreep([HEAL,MOVE], Creep.getRandomName('[Healer]'),
+            { role: 'healer' });
+    }
     // if not enough upgraders
     else if (numberOfUpgraders < minimumNumberOfUpgraders) {
         // try to spawn one
@@ -115,6 +123,10 @@ module.exports.loop = function () {
     else if (numberOfRepairers < minimumNumberOfRepairers) {
         // try to spawn one
         name = Game.spawns.Spawn1.createCustomCreep( energy, 'repairer' );
+    }
+    else if (numberOfMasons < minimumNumberOfMasons) {
+        // try to spawn one
+        name = Game.spawns.Spawn1.createCustomCreep( energy, 'mason' );
     }
     // if not enough builders
     // else if (numberOfBuilders < minimumNumberOfBuilders) {

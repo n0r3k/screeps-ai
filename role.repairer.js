@@ -20,7 +20,7 @@ module.exports = {
             var structureTypes = [STRUCTURE_TOWER, STRUCTURE_RAMPART, STRUCTURE_EXTENSION, STRUCTURE_ROAD];
             for (let structureType of structureTypes) {
                 let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: (s) => s.structureType == structureType && s.hits < (s.structureType == STRUCTURE_RAMPART ? 100000 : s.hitsMax)
+                    filter: (s) => s.structureType == structureType && s.hits < (s.structureType == STRUCTURE_RAMPART ? 50000 : s.hitsMax)
                 });
 
                 if ( structure != undefined ) {
@@ -35,7 +35,7 @@ module.exports = {
                 {
                     // if no structure find, find any other structure
                     structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                        filter: (s) => s.hits < (s.structureType == STRUCTURE_WALL ? 40000 : s.hitsMax) && s.structureType != STRUCTURE_RAMPART
+                        filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_RAMPART && s.structureType != STRUCTURE_WALL
                     });
 
                     // if one is found
