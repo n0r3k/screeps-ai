@@ -41,4 +41,11 @@ module.exports = function() {
          working: false
        });
    }
+
+   StructureSpawn.prototype.createClaimer = function(target) {
+      return this.createCreep( [CLAIM, MOVE], Creep.getRandomName('[claimer]'), {
+         role: 'claimer',
+         target: target
+      });
+   }
 };

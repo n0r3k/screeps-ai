@@ -10,6 +10,7 @@ var roleHealer = require('role.healer');
 var roleRanger = require('role.ranger');
 var roleMason = require('role.mason');
 var roleLongDistanceHarvester = require('role.longDistanceHarvester');
+var roleClaimer = require('role.claimer');
 
 var structureTower = require('structure.tower');
 
@@ -70,6 +71,9 @@ module.exports.loop = function () {
         else if (creep.memory.role == 'longDistanceHarvester') {
             roleLongDistanceHarvester.run(creep);
         }
+        else if (creep.memory.role == 'claimer') {
+            roleClaimer.run(creep);
+        }
     }
 
     // setup some minimum numbers for different roles
@@ -81,7 +85,7 @@ module.exports.loop = function () {
     var minimumNumberOfRangers = 2;
     var minimumNumberOfHealers = 1;
     var minimumNumberOfMasons = 2;
-    var minimumNumberOflongDistanceHarvesters = 1;
+    var minimumNumberOflongDistanceHarvesters = 4;
 
     // count the number of creeps alive for each role
     // _.sum will count the number of properties in Game.creeps filtered by the
@@ -106,6 +110,12 @@ module.exports.loop = function () {
 
         if ( name == ERR_NOT_ENOUGH_ENERGY && numberOfHarvesters == 0 ) {
            Game.spawns.Spawn1.createCustomCreep( Game.spawns.Spawn1.room.energyAvailable, 'harvester' );
+        }
+    }
+    else if (Game.spawns.Spawn1.memory.claimRoom != undefined) {
+        name = Game.spawns.Spawn1.createClaimer( Game.spawns.Spawn1.memory.claimRoom );
+        if (!(name < 0)) {
+           delete Game.spawns.Spawn1.memory.claimRoom;
         }
     }
     else if (numberOfAttackers < minimumNumberOfAttackers) {
