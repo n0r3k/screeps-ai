@@ -9,8 +9,11 @@ var roleAttacker = require('role.attacker');
 var roleHealer = require('role.healer');
 var roleRanger = require('role.ranger');
 var roleMason = require('role.mason');
+var roleLongDistanceHarvester = require('role.longDistanceHarvester');
 
 var structureTower = require('structure.tower');
+
+const HOME = 'W5N8';
 
 module.exports.loop = function () {
     // check for memory entries of died creeps by iterating over Memory.creeps
@@ -22,7 +25,7 @@ module.exports.loop = function () {
         }
     }
 
-    var towers = Game.rooms.W5N8.find(FIND_STRUCTURES, {
+    var towers = Game.rooms[HOME].find(FIND_STRUCTURES, {
         filter : (s) => s.structureType == STRUCTURE_TOWER
     });
 
@@ -64,6 +67,9 @@ module.exports.loop = function () {
         else if (creep.memory.role == 'mason') {
             roleMason.run(creep);
         }
+        else if (creep.memory.role == 'longDistanceHarvester') {
+            roleLongDistanceHarvester.run(creep);
+        }
     }
 
     // setup some minimum numbers for different roles
@@ -75,6 +81,7 @@ module.exports.loop = function () {
     var minimumNumberOfRangers = 2;
     var minimumNumberOfHealers = 1;
     var minimumNumberOfMasons = 2;
+    var minimumNumberOflongDistanceHarvesters = 1;
 
     // count the number of creeps alive for each role
     // _.sum will count the number of properties in Game.creeps filtered by the
@@ -87,6 +94,7 @@ module.exports.loop = function () {
     var numberOfHealers = _.sum(Game.creeps, (c) => c.memory.role == 'healer');
     var numberOfRangers = _.sum(Game.creeps, (c) => c.memory.role == 'ranger');
     var numberOfMasons = _.sum(Game.creeps, (c) => c.memory.role == 'mason');
+    var numberOflongDistanceHarvesters = _.sum(Game.creeps, (c) => c.memory.role == 'longDistanceHarvester');
 
     var energy = Game.spawns.Spawn1.room.energyCapacityAvailable;
     var name = undefined;
@@ -127,6 +135,10 @@ module.exports.loop = function () {
     else if (numberOfMasons < minimumNumberOfMasons) {
         // try to spawn one
         name = Game.spawns.Spawn1.createCustomCreep( energy, 'mason' );
+    }
+    else if (numberOflongDistanceHarvesters < minimumNumberOflongDistanceHarvesters) {
+        // try to spawn one
+        name = Game.spawns.Spawn1.createLongDistanceHarvester( energy, 5, HOME, 'W6N8', 0 );
     }
     // if not enough builders
     // else if (numberOfBuilders < minimumNumberOfBuilders) {
