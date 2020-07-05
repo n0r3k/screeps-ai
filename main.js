@@ -134,7 +134,7 @@ module.exports.loop = function () {
             }
             else if (numberOfCarriers < spawn.memory.minCarriers) {
                 // try to spawn one
-                name = spawn.createCarrier(300);
+                name = spawn.createCarrier(150);
             }
             else if (spawn.memory.claimRoom != undefined) {
                 name = spawn.createClaimer( spawn.memory.claimRoom );
@@ -149,7 +149,7 @@ module.exports.loop = function () {
             }
             else if (numberOfHealers < spawn.memory.minHealers) {
                 // try to spawn one
-                name = spawn.createCreep([HEAL,MOVE], Creep.getRandomName('[Healer]'),
+                name = spawn.createCreep([HEAL,MOVE], Creep.getRandomName('[healer]'),
                     { role: 'healer' });
             }
             // if not enough upgraders
@@ -159,7 +159,7 @@ module.exports.loop = function () {
             }
             else if (numberOfRangers < spawn.memory.minRangers) {
                 // try to spawn one
-                name = spawn.createCreep([RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE], Creep.getRandomName('[Ranger]'),
+                name = spawn.createCreep([RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE], Creep.getRandomName('[ranger]'),
                     { role: 'ranger', working: false});
             }
             else if (numberOfRepairers < spawn.memory.minRepairers) {
@@ -182,6 +182,7 @@ module.exports.loop = function () {
 
                 if ( targetRoom != undefined ) {
                   name = spawn.createLongDistanceHarvester( energy, 5, spawn.room.name, targetRoom, 0 );
+                  console.log(name);
                 }
             }
             // if not enough builders
