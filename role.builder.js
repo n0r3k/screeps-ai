@@ -52,6 +52,12 @@ module.exports = {
                 }
             }
             else {
+                var resources = creep.pos.lookFor(LOOK_ENERGY);
+                // TODO: fix to work with any resource (and not pickup resource even if we want energy)
+                if(resources.length > 0 && resources[0].resourceType == RESOURCE_ENERGY) {
+                    return creep.pickup(resources[0]) == OK;
+                }
+
                 // find closest source
                 let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: (s) => s.structureType == STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
