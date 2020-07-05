@@ -17,7 +17,7 @@ module.exports = {
         // if creep is supposed to repair a structure
         if (creep.memory.working == true) {
            let walls = creep.room.find(FIND_STRUCTURES, {
-              filter: (s) => s.structureType == STRUCTURE_WALL
+              filter: (s) => s.structureType == STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART
            });
 
            var target = undefined;
@@ -50,7 +50,7 @@ module.exports = {
             var resources = creep.pos.lookFor(LOOK_ENERGY);
             // TODO: fix to work with any resource (and not pickup resource even if we want energy)
             if(resources.length > 0 && resources[0].resourceType == RESOURCE_ENERGY) {
-                return creep.pickup(resources[0]) == OK;
+                creep.pickup(resources[0]);
             }
 
             // find closest source
