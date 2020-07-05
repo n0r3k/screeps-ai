@@ -33,7 +33,7 @@ module.exports = {
             if(result == OK) {
                 return this.obtainResults.harvested;
             } else if(result == ERR_NOT_IN_RANGE) {
-                creep.goTo(source);
+                creep.moveTo(source);
                 return this.obtainResults.moving;
             }
         }
@@ -45,7 +45,7 @@ module.exports = {
             if(result == OK) {
                 return this.obtainResults.withdrawn;
             } else if(result == ERR_NOT_IN_RANGE) {
-                creep.goTo(store);
+                creep.moveTo(store);
                 return this.obtainResults.moving;
             }
         }
