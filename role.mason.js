@@ -48,38 +48,10 @@ module.exports = {
         }
         // if creep is supposed to harvest energy from source
         else {
-<<<<<<< HEAD
-            var resources = creep.pos.lookFor(LOOK_ENERGY);
-            // TODO: fix to work with any resource (and not pickup resource even if we want energy)
-            if(resources.length > 0 && resources[0].resourceType == RESOURCE_ENERGY) {
-                creep.pickup(resources[0]);
-            }
-
-            // find closest source
-            let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (s) => s.structureType == STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
-            });
-            if ( container != undefined ) {
-                // try to harvest energy, if the source is not in range
-                if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    // move towards the source
-                    creep.moveTo(container);
-                }
-            }
-            else {
-                // find closest source
-                var source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-                // try to harvest energy, if the source is not in range
-                if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                    // move towards the source
-                    creep.moveTo(source);
-                }
-=======
             var source = creep.pos.findClosestByRange(FIND_SOURCES);
             let result = logistic.obtainEnergy(creep, source, true);
             if(result == logistic.obtainResults.withdrawn) {
                 creep.memory.working = true;
->>>>>>> 3c9ae82a0f2ab17303a34fdeeecd31ef764d4ce7
             }
         }
     }

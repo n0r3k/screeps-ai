@@ -181,11 +181,7 @@ module.exports.loop = function () {
                 }
 
                 if ( targetRoom != undefined ) {
-<<<<<<< HEAD
-                  name = spawn.createLongDistanceHarvester( energy, 5, spawn.room.name, targetRoom, 0 );
-=======
                   name = spawn.createLongDistanceHarvester( energy, 4, spawn.room.name, targetRoom, 0 );
->>>>>>> 3c9ae82a0f2ab17303a34fdeeecd31ef764d4ce7
                 }
             }
             // if not enough builders

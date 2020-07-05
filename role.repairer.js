@@ -57,17 +57,10 @@ module.exports = {
         }
         // if creep is supposed to harvest energy from source
         else {
-<<<<<<< HEAD
-            var resources = creep.pos.lookFor(LOOK_ENERGY);
-            // TODO: fix to work with any resource (and not pickup resource even if we want energy)
-            if(resources.length > 0 && resources[0].resourceType == RESOURCE_ENERGY) {
-                creep.pickup(resources[0]);
-=======
             var source = creep.pos.findClosestByRange(FIND_SOURCES);
             let result = logistic.obtainEnergy(creep, source, true);
             if(result == logistic.obtainResults.withdrawn) {
                 creep.memory.working = true;
->>>>>>> 3c9ae82a0f2ab17303a34fdeeecd31ef764d4ce7
             }
         }
     }
