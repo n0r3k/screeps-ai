@@ -1,7 +1,10 @@
+var roleRepairer = require('role.repairer');
+
 module.exports = {
+    name: 'carrier',
     // a function to run the logic for this role
     run: function(creep) {
-        // if creep is bringing energy to the controller but has no energy left
+        // if creep is bringing energy to the spawn but has no energy left
         if (creep.memory.working == true && creep.carry.energy == 0) {
             // switch state
             creep.memory.working = false;
@@ -11,22 +14,30 @@ module.exports = {
             // switch state
             creep.memory.working = true;
         }
-        else if (creep.memory.working == undefined) {
-            creep.memory.working = false;
-        }
 
-        // if creep is supposed to transfer energy to the controller
+        // if creep is supposed to transfer energy to the spawn
         if (creep.memory.working == true) {
-            // instead of upgraderController we could also use:
-            // if (creep.transfer(creep.room.controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            // transfer in order
+            for (let structureType of [STRUCTURE_EXTENSION, STRUCTURE_TOWER, STRUCTURE_SPAWN, STRUCTURE_STORAGE]) {
+                let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: (s) => s.structureType == structureType && s.energy < s.energyCapacity
+                });
 
-            // try to upgrade the controller
-            if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                // if not in range, move towards the controller
-                creep.moveTo(creep.room.controller);
+                if ( structure != undefined ) {
+                   if ( creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                      creep.moveTo(structure);
+                   }
+
+                   break;
+                }
+                // if nowhere to transfer, do repairing work
+                else
+                {
+                    roleRepairer.run(creep);
+                }
             }
         }
-        // if creep is supposed to harvest energy from source
+        // if creep is supposed to transfer energy from container
         else {
             // find closest source
             let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
@@ -37,15 +48,6 @@ module.exports = {
                 if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     // move towards the source
                     creep.moveTo(container);
-                }
-            }
-            else {
-                // find closest source
-                var source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-                // try to harvest energy, if the source is not in range
-                if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                    // move towards the source
-                    creep.moveTo(source);
                 }
             }
         }

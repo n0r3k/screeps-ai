@@ -48,4 +48,24 @@ module.exports = function() {
          target: target
       });
    }
+
+   StructureSpawn.prototype.createMiner = function(sourceId) {
+      return this.createCreep( [WORK, WORK, WORK, WORK, WORK, MOVE], Creep.getRandomName('[miner]'), {
+         role: 'miner',
+         sourceId: sourceId
+      });
+   }
+
+   StructureSpawn.prototype.createCarrier = function(energy) {
+       let numberOfParts = Math.floor( energy / 150 );
+       let body = [];
+       for ( let i = 0; i < numberOfParts; i++ ) {
+           body.push(CARRY);
+       }
+       for ( let i = 0; i < numberOfParts; i++ ) {
+           body.push(MOVE);
+       }
+
+       return this.createCreep( body, Creep.getRandomName('[carrier]'), { role: 'carrier', working: false });
+   }
 };
