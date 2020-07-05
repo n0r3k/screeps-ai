@@ -47,12 +47,16 @@ module.exports = {
            }
         }
         // if creep is supposed to harvest energy from source
-        else {
-            var source = creep.pos.findClosestByRange(FIND_SOURCES);
-            let result = logistic.obtainEnergy(creep, source, true);
-            if(result == logistic.obtainResults.withdrawn) {
-                creep.memory.working = true;
-            }
+        else
+        {
+           this.harvestEnergy(creep);
         }
-    }
+    },
+    harvestEnergy: function(creep) {
+         var source = creep.pos.findClosestByRange(FIND_SOURCES);
+         let result = logistic.obtainEnergy(creep, source, true);
+         if(result == logistic.obtainResults.withdrawn) {
+            creep.memory.working = true;
+         }
+     }
 };
