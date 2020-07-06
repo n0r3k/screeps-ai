@@ -77,12 +77,16 @@ module.exports.loop = function () {
         }
     }
 
-    var minimumNumberOflongDistanceHarvesters  = 3;
+    var minimumNumberOflongDistanceHarvesters  = 0;
 
     for ( let spawnName in Game.spawns )
     {
         let spawn = Game.spawns[spawnName];
         let creepsInRoom = spawn.room.find(FIND_MY_CREEPS);
+
+        if ( spawn.room.name == 'E22S15' ) {
+            minimumNumberOflongDistanceHarvesters = 1;
+        }
 
         // count the number of creeps alive for each role
         // _.sum will count the number of properties in Game.creeps filtered by the

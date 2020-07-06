@@ -8,6 +8,8 @@ module.exports = {
         {
            var exit = creep.room.findExitTo(creep.memory.target);
            creep.moveTo(creep.pos.findClosestByRange(exit));
+
+           return;
         }
 
         // if creep is trying to complete a constructionSite but has no energy left

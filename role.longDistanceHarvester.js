@@ -37,6 +37,7 @@ module.exports = {
             }
             else
             {
+                // check for constructions in target room
                 var exit = creep.room.findExitTo(creep.memory.home);
                 creep.moveTo(creep.pos.findClosestByRange(exit));
             }
