@@ -1,3 +1,5 @@
+const logistic = require('helper.logistic');
+
 module.exports = {
     name: 'longDistanceHarvester',
     // a function to run the logic for this role
@@ -17,11 +19,13 @@ module.exports = {
         if (creep.memory.working == true) {
             if ( creep.room.name == creep.memory.home ) {
               // transfer in order
-              for (let structureType of [STRUCTURE_EXTENSION, STRUCTURE_TOWER, STRUCTURE_SPAWN, STRUCTURE_STORAGE]) {
+              for (let structureType of [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_TOWER, STRUCTURE_STORAGE]) {
                   let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                      filter: (s) => s.structureType == structureType && s.energy < s.energyCapacity
+                      filter: (s) => s.structureType == structureType
+                                  && ( ( s.structureType == STRUCTURE_STORAGE && Game.rooms[creep.memory.home].storage.store.getUsedCapacity() < STORAGE_CAPACITY ) ||
+                                       ( s.energy < s.energyCapacity ))
                   });
-
+                  // console.log(structure);
                   if ( structure != undefined ) {
                      if ( creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(structure);
@@ -42,12 +46,15 @@ module.exports = {
         {
             if (creep.room.name == creep.memory.target)
             {
+                this.harvestEnergy(creep);
+/*
                 var source = creep.room.find(FIND_SOURCES)[creep.memory.sourceIndex];
                 // try to harvest energy, if the source is not in rang
                 if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
                    // move towards the source
                    creep.moveTo(source);
                 }
+*/
             }
             else
             {
@@ -55,5 +62,12 @@ module.exports = {
                 creep.moveTo(creep.pos.findClosestByRange(exit));
             }
         }
-    }
+    },
+    harvestEnergy: function(creep) {
+         var source = creep.pos.findClosestByRange(FIND_SOURCES);
+         let result = logistic.obtainEnergy(creep, source, true);
+         if(result == logistic.obtainResults.withdrawn) {
+             creep.memory.working = true;
+         }
+     }
 };

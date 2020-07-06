@@ -15,6 +15,11 @@ module.exports = {
     obtainEnergy: function(creep, source, considerStorage) {
         this.pickupSpareEnergy(creep);
 
+        let tombstone = creep.pos.findClosestByPath(FIND_TOMBSTONES);
+        if (tombstone != undefined) {
+            this.obtainEnergyFromTombStone(creep, tombstone);          
+        }
+
         if(considerStorage) {
             var result = this.obtainEnergyFromStore(creep, creep.room.storage);
             if(result) {
@@ -38,6 +43,22 @@ module.exports = {
             }
         }
         return null; // something unexpected happened
+    },
+    obtainEnergyFromTombStone: function(creep, tombstone) {
+        // if tombstone has resources
+        if(tombstone.store.getUsedCapacity() > tombstone.store.carryCapacity) {
+            // iterate through all resources
+            for(let resource in tombstone.store) {
+                // pickup resource
+                var result = creep.withdraw(tombstone, resource);
+                if (result == OK) {
+                  return this.obtainResults.withdrawn;
+                } else if (result == ERR_NOT_IN_RANGE) {
+                  creep.moveTo(tombstone);
+                  return this.obtainResults.moving;
+                }
+            }
+        }
     },
     obtainEnergyFromStore: function(creep, store) {
         if(store && (store.energy > 0 || (store.store && store.store.energy > 0))) {
