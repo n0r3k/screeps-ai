@@ -6,6 +6,9 @@ module.exports = function() {
        let body = [];
        for ( let i = 0; i < numberOfParts; i++ ) {
            body.push(WORK);
+           if ( numberOfParts == 1) {
+               body.push(WORK);
+           }
        }
        for ( let i = 0; i < numberOfParts; i++ ) {
            body.push(CARRY);

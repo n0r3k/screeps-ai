@@ -3,6 +3,14 @@ const logistic = require('helper.logistic');
 module.exports = {
     // a function to run the logic for this role
     run: function(creep) {
+        if (creep.memory.target != undefined && creep.room.name != creep.memory.target)
+        {
+           var exit = creep.room.findExitTo(creep.memory.target);
+           creep.moveTo(creep.pos.findClosestByRange(exit));
+
+           return;
+        }
+
         // if creep is bringing energy to the controller but has no energy left
         if (creep.memory.working == true && creep.carry.energy == 0) {
             // switch state

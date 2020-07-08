@@ -17,7 +17,7 @@ module.exports = {
 
         let tombstone = creep.pos.findClosestByPath(FIND_TOMBSTONES);
         if (tombstone != undefined) {
-            this.obtainEnergyFromTombStone(creep, tombstone);          
+            this.obtainEnergyFromTombStone(creep, tombstone);
         }
 
         if(considerStorage) {

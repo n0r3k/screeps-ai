@@ -3,14 +3,6 @@ const logistic = require('helper.logistic');
 
 module.exports = {
     name: 'harvester',
-    miningConfigs: [
-        [WORK, WORK, MOVE, WORK, WORK, MOVE, WORK, CARRY, MOVE, CARRY, CARRY, MOVE, CARRY, CARRY, MOVE],
-        [WORK, WORK, MOVE, WORK, WORK, MOVE, CARRY, CARRY, MOVE, CARRY, CARRY, MOVE],
-        [WORK, WORK, MOVE, CARRY, CARRY, MOVE, CARRY, CARRY, MOVE],
-        [WORK, WORK, MOVE, CARRY, CARRY, MOVE],
-        [WORK, WORK, CARRY, MOVE],
-        [WORK, CARRY, MOVE]
-    ],
     // a function to run the logic for this role
     run: function(creep) {
         // if creep is bringing energy to the spawn but has no energy left
