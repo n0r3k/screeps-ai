@@ -13,6 +13,7 @@ var roleLongDistanceHarvester = require('role.longDistanceHarvester');
 var roleClaimer = require('role.claimer');
 var roleMiner = require('role.miner');
 var roleCarrier = require('role.carrier');
+var roleMineralMiner = require('role.mineralMiner');
 
 var structureTower = require('structure.tower');
 
@@ -75,6 +76,9 @@ module.exports.loop = function () {
         else if (creep.memory.role == 'carrier') {
             roleCarrier.run(creep);
         }
+        else if (creep.memory.role == 'mineralMiner' ) {
+            roleMineralMiner.run(creep);
+        }
     }
 
     var minimumNumberOflongDistanceHarvesters  = 0;
@@ -84,9 +88,9 @@ module.exports.loop = function () {
         let spawn = Game.spawns[spawnName];
         let creepsInRoom = spawn.room.find(FIND_MY_CREEPS);
 
-        if ( spawn.room.name == 'E22S15' ) {
-            minimumNumberOflongDistanceHarvesters = 1;
-        }
+        // if ( spawn.room.name == 'E22S15' ) {
+        //     minimumNumberOflongDistanceHarvesters = 1;
+        // }
 
         // count the number of creeps alive for each role
         // _.sum will count the number of properties in Game.creeps filtered by the
@@ -102,11 +106,12 @@ module.exports.loop = function () {
         var numberOfMiners = _.sum(creepsInRoom, (c) => c.memory.role == 'miner');
         var numberOfCarriers = _.sum(creepsInRoom, (c) => c.memory.role == 'carrier');
         var numberOflongDistanceHarvesters = _.sum(Game.creeps, (c) => c.memory.role == 'longDistanceHarvester');
+        var numberOfMineralMiners = _.sum(creepsInRoom, (c) => c.memory.role == 'mineralMiner');
 
         var energy = spawn.room.energyCapacityAvailable;
         var name = undefined;
 
-        if ( numberOfHarvesters == 0 && numberOfMiners == 0 && numberOfCarriers == 0 ) {
+        if ( numberOfHarvesters == 0 && numberOfCarriers == 0 ) {
             if ( numberOfMiners > 0 ) {
                 spawn.createCarrier(spawn.room.energyAvailable);
             }
@@ -148,7 +153,18 @@ module.exports.loop = function () {
             }
             else if (numberOfAttackers < spawn.memory.minAttackers) {
                 // try to spawn one
-                name = spawn.createCreep([TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,ATTACK,ATTACK,ATTACK,MOVE,MOVE,MOVE,MOVE,ATTACK], Creep.getRandomName('[Attacker]'),
+                var config = [TOUGH,TOUGH,TOUGH,TOUGH,ATTACK,ATTACK,MOVE,MOVE]; // 300
+
+                // if ( spawn.room.controller.level == 2 ) {
+                //     config = [TOUGH,TOUGH,TOUGH,TOUGH, TOUGH,TOUGH,ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE]; // 550
+                // }
+                // else if ( spawn.room.controller.level == 3 ) {
+                //     config = [TOUGH,TOUGH,TOUGH,TOUGH, TOUGH,TOUGH, TOUGH, TOUGH, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]; // 750
+                // }
+                // else if ( spawn.room.controller.level > 3 ) {
+                //     config = [TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE]; // 950
+                // }
+                name = spawn.createCreep(config, Creep.getRandomName('[Attacker]'),
                     { role: 'attacker' });
             }
             else if (numberOfHealers < spawn.memory.minHealers) {
@@ -173,6 +189,10 @@ module.exports.loop = function () {
             else if (numberOfMasons < spawn.memory.minMasons) {
                 // try to spawn one
                 name = spawn.createCustomCreep( energy, 'mason' );
+            }
+            else if (numberOfMineralMiners < spawn.memory.minMineralMiners) {
+                // try to spawn one
+                name = spawn.createCustomCreep( energy, 'mineralMiner' );
             }
             else if (numberOflongDistanceHarvesters  < minimumNumberOflongDistanceHarvesters) {
                 // try to spawn one

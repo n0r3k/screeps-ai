@@ -44,10 +44,23 @@ module.exports = {
        }
    },
    harvestEnergy: function(creep) {
-        var source = creep.pos.findClosestByRange(FIND_SOURCES);
-        let result = logistic.obtainEnergy(creep, source, true);
-        if(result == logistic.obtainResults.withdrawn) {
-            creep.memory.working = true;
+        let tombstone = creep.pos.findClosestByPath(FIND_TOMBSTONES, {filter: (s) => s.store.getUsedCapacity() > 0 });
+        if (tombstone != undefined) {
+            // iterate through all resources
+            for(let resource in tombstone.store) {
+                // pickup resource
+                if ( resource.resourceType == RESOURCE_ENERGY && creep.withdraw(tombstone, resource) == ERR_NOT_IN_RANGE) {
+                   creep.moveTo(tombstone);
+                }
+            }
+        }
+        else
+        {
+            var source = creep.pos.findClosestByRange(FIND_SOURCES);
+            let result = logistic.obtainEnergy(creep, source, true);
+            if(result == logistic.obtainResults.withdrawn) {
+                creep.memory.working = true;
+            }
         }
     }
 };

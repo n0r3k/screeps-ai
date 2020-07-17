@@ -46,7 +46,7 @@ module.exports = {
     },
     obtainEnergyFromTombStone: function(creep, tombstone) {
         // if tombstone has resources
-        if(tombstone.store.getUsedCapacity() > tombstone.store.carryCapacity) {
+        if(tombstone.store.getUsedCapacity() > 0) {
             // iterate through all resources
             for(let resource in tombstone.store) {
                 // pickup resource
